@@ -47,13 +47,17 @@
         },
       ],
       cambio: 'Monselice',
+      cambio_min: nuovoOrario ? 8 : 9,
     },
 
-    // Dove stare sul treno per scendere vicino al sottopasso.
-    // DA VERIFICARE: lo osserva Stefano a Monselice (settimana 2).
-    carrozza: {
-      titolo: 'Stai nella carrozza di testa',
-      testo: 'A Monselice scendi vicino al sottopasso: è la strada più corta per il binario 1.',
+    // Il disegno del treno e la carrozza giusta per scendere vicino alle scale.
+    // DA VERIFICARE a Monselice (settimana 2, Stefano): quante carrozze ha il treno,
+    // se il numero sopra le porte parte da 1 in testa, dove sono le scale del sottopasso.
+    treno: {
+      carrozze: 4, // DA VERIFICARE
+      carrozza_giusta: 1, // DA VERIFICARE: 1 = la prima in testa
+      uscita: 'scale del sottopasso',
+      verificato: false, // mettere true quando i dati sono stati controllati sul posto
     },
 
     // Cosa fare se la coincidenza salta (orari veri, stessa fonte).

@@ -1,6 +1,6 @@
 // DE CIA · Service worker dell'app Coincidenze
 // Fa due cose: tiene l'app apribile anche con poca rete, e mostra le notifiche.
-const CACHE = 'coincidenze-v1';
+const CACHE = 'coincidenze-v2';
 const FILE = ['/app/', '/app/app.css', '/app/app.js', '/app/dati.js', '/app/manifest.webmanifest', '/app/icone/icona.svg', '/app/icone/icona-192.png'];
 
 self.addEventListener('install', (e) => {
@@ -15,21 +15,26 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// Prima la rete (dati sempre freschi), la copia salvata solo se la rete manca.
+// Prima la rete (file sempre aggiornati). Se la rete manca, o non risponde entro
+// 4 secondi (in treno capita spesso), si usa la copia salvata sul telefono.
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET' || url.origin !== location.origin || !url.pathname.startsWith('/app/')) return;
+  const copiaSalvata = () => caches.match(e.request, { ignoreSearch: true }).then((r) => r || caches.match('/app/'));
+  const rete = fetch(e.request).then((r) => {
+    if (r.ok) {
+      const copia = r.clone();
+      caches.open(CACHE).then((c) => c.put(e.request, copia));
+    }
+    return r;
+  });
+  const lenta = new Promise((ok) => setTimeout(ok, 4000)).then(copiaSalvata);
   e.respondWith(
-    fetch(e.request)
-      .then((r) => {
-        if (r.ok) {
-          const copia = r.clone();
-          caches.open(CACHE).then((c) => c.put(e.request, copia));
-        }
-        return r;
-      })
-      .catch(() => caches.match(e.request, { ignoreSearch: true }).then((r) => r || caches.match('/app/')))
+    Promise.race([rete, lenta.then((r) => r || rete)])
+      .then((r) => r || copiaSalvata())
+      .catch(() => copiaSalvata())
   );
+  e.waitUntil(rete.catch(() => {}));
 });
 
 self.addEventListener('push', (e) => {
