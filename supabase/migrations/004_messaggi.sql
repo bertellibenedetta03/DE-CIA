@@ -10,7 +10,7 @@
 -- (con la chiave segreta, su Vercel) può scrivere, e solo voi dal
 -- pannello Supabase potete leggere.
 --
--- Si esegue UNA volta sola, nell'editor SQL di Supabase.
+-- Si può eseguire anche più volte: non cancella niente.
 -- =====================================================================
 
 create table if not exists public.messaggi (
@@ -34,3 +34,9 @@ comment on table public.messaggi is
 alter table public.messaggi enable row level security;
 
 create index if not exists messaggi_creato_il_idx on public.messaggi (creato_il desc);
+
+-- La funzione del sito usa la chiave segreta (ruolo service_role):
+-- nei progetti Supabase recenti il permesso va dato esplicitamente.
+grant usage on schema public to service_role;
+grant select, insert, update on public.messaggi to service_role;
+grant usage, select on all sequences in schema public to service_role;
