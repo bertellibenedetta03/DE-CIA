@@ -38,9 +38,28 @@ function rispondi(req, res, status, dati) {
   return res.end();
 }
 
+// Accetta l'URL anche se copiato con /rest/v1 o spazi in più
+function urlSupabase() {
+  return (process.env.SUPABASE_URL || '').trim().replace(/\/+$/, '').replace(/\/rest\/v1$/, '');
+}
+
+function chiaveSupabase() {
+  return (process.env.SUPABASE_SECRET_KEY || '').trim();
+}
+
+// Codice breve mostrato a chi invia, per capire subito dove sta il problema
+function codiceErrore(messaggio) {
+  if (/non configurato/.test(messaggio)) return 'S1 · manca SUPABASE_URL o SUPABASE_SECRET_KEY su Vercel';
+  if (/Supabase 401|Invalid API key|JWT/i.test(messaggio)) return 'S2 · chiave Supabase sbagliata';
+  if (/PGRST205|42P01|does not exist|Could not find the table/i.test(messaggio)) return 'S3 · manca la tabella messaggi';
+  if (/42501|permission denied/i.test(messaggio)) return 'S4 · permessi della tabella messaggi';
+  if (/fetch failed|ENOTFOUND|Invalid URL/i.test(messaggio)) return 'S5 · SUPABASE_URL sbagliato';
+  return 'S9 · altro (vedi Logs su Vercel)';
+}
+
 async function salvaSuSupabase(riga) {
-  const url = process.env.SUPABASE_URL;
-  const chiave = process.env.SUPABASE_SECRET_KEY;
+  const url = urlSupabase();
+  const chiave = chiaveSupabase();
   if (!url || !chiave) throw new Error('Supabase non configurato');
 
   const headers = {
@@ -51,7 +70,7 @@ async function salvaSuSupabase(riga) {
   // Le vecchie chiavi "service_role" sono JWT e vanno anche in Authorization
   if (chiave.startsWith('eyJ')) headers.Authorization = `Bearer ${chiave}`;
 
-  const r = await fetch(`${url.replace(/\/$/, '')}/rest/v1/messaggi`, {
+  const r = await fetch(`${url}/rest/v1/messaggi`, {
     method: 'POST',
     headers,
     body: JSON.stringify(riga),
@@ -62,8 +81,8 @@ async function salvaSuSupabase(riga) {
 }
 
 async function segnaEmailInviata(id) {
-  const url = process.env.SUPABASE_URL.replace(/\/$/, '');
-  const chiave = process.env.SUPABASE_SECRET_KEY;
+  const url = urlSupabase();
+  const chiave = chiaveSupabase();
   const headers = { apikey: chiave, 'Content-Type': 'application/json' };
   if (chiave.startsWith('eyJ')) headers.Authorization = `Bearer ${chiave}`;
   await fetch(`${url}/rest/v1/messaggi?id=eq.${encodeURIComponent(id)}`, {
@@ -74,7 +93,7 @@ async function segnaEmailInviata(id) {
 }
 
 async function mandaEmail(m) {
-  const chiave = process.env.RESEND_API_KEY;
+  const chiave = (process.env.RESEND_API_KEY || '').trim();
   const destinatari = (process.env.EMAIL_TEAM || '')
     .split(',')
     .map((s) => s.trim())
@@ -172,7 +191,7 @@ module.exports = async function handler(req, res) {
     console.error('Salvataggio fallito:', e.message);
     return rispondi(req, res, 500, {
       ok: false,
-      errore: 'Non siamo riusciti a salvare il messaggio. Riprova tra poco.',
+      errore: `Non siamo riusciti a salvare il messaggio. Riprova tra poco. (codice ${codiceErrore(e.message)})`,
     });
   }
 
