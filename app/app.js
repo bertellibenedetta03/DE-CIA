@@ -33,6 +33,7 @@
   let foglioAperto = false;
   let inVolo = false;
   let segnaVistaInCorso = false;
+  let senzaRete = false;
 
   // ---------- Utilità ----------
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -55,7 +56,18 @@
       ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) }
       : {};
     const url = `${API}?azione=${azione}${corpo ? '' : `&vid=${encodeURIComponent(vid)}`}`;
-    const r = await fetch(url, opz);
+    const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timer = ctrl ? setTimeout(() => ctrl.abort(), 8000) : null;
+    let r;
+    try {
+      r = await fetch(url, ctrl ? { ...opz, signal: ctrl.signal } : opz);
+    } catch (e) {
+      const err = new Error('nessuna rete');
+      err.rete = true;
+      throw err;
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
     let j = {};
     try { j = await r.json(); } catch (e) { /* risposta vuota */ }
     if (!r.ok || !j.ok) throw new Error(j.errore || `Errore ${r.status}`);
@@ -67,19 +79,72 @@
     inVolo = true;
     try {
       stato = await chiama('stato');
+      stato.salvato_il = new Date().toISOString();
+      scrivi('coinc_stato', JSON.stringify(stato));
+      if (senzaRete) { senzaRete = false; ultimaFirma = ''; }
       mostraErrore('');
-      const firma = JSON.stringify([stato.viaggio, stato.richieste, stato.mia, stato.notifiche]);
+      const firma = JSON.stringify([stato.viaggio, stato.richieste, stato.mia, stato.notifiche, leggi('coinc_coda')]);
       if (forza || firma !== ultimaFirma) {
         ultimaFirma = firma;
         if (disegna() === false) ultimaFirma = '';
       }
       if (rotta() === 'capotreno') segnaVista();
     } catch (e) {
-      mostraErrore(`Connessione non riuscita: ${e.message}. Riprovo da solo.`);
-      if (!stato) disegna();
+      if (e.rete) {
+        if (!senzaRete) { senzaRete = true; ultimaFirma = ''; disegna(); }
+        mostraErrore('');
+      } else {
+        mostraErrore(`Connessione non riuscita: ${e.message}. Riprovo da solo.`);
+      }
+      if (!stato) { stato = statoDiRiserva(); disegna(); }
     } finally {
       inVolo = false;
     }
+    if (!senzaRete) inviaCoda();
+  }
+
+  // ---------- Senza rete ----------
+  // L'ultimo stato ricevuto resta salvato sul telefono; se non c'è, si parte dai dati del viaggio.
+  function statoDiRiserva() {
+    try {
+      const s = JSON.parse(leggi('coinc_stato') || 'null');
+      if (s && s.viaggio) return s;
+    } catch (e) { /* ignora */ }
+    const attr = 4;
+    return {
+      viaggio: { ritardo_min: 0, minuti_attraversamento: attr, minuti_timeout: 3, cambio_min: D.viaggio.cambio_min, margine_reale: D.viaggio.cambio_min - attr },
+      richieste: [], mia: null, notifiche: { pronte: false, chiave: null }, salvato_il: null,
+    };
+  }
+
+  function leggiCoda() {
+    try { return JSON.parse(leggi('coinc_coda') || 'null'); } catch (e) { return null; }
+  }
+  function scriviCoda(v) { scrivi('coinc_coda', v ? JSON.stringify(v) : ''); }
+
+  // Manda la richiesta rimasta in coda appena torna il segnale
+  let codaInVolo = false;
+  async function inviaCoda() {
+    const coda = leggiCoda();
+    if (!coda || codaInVolo) return;
+    codaInVolo = true;
+    try {
+      await chiama('richiesta', { vid, nome: coda.nome });
+      scriviCoda(null);
+      ultimaFirma = '';
+      codaInVolo = false;
+      aggiorna(true);
+      return;
+    } catch (e) {
+      if (!e.rete) { scriviCoda(null); mostraErrore(`Richiesta non inviata: ${e.message}`); }
+    }
+    codaInVolo = false;
+  }
+
+  function bannerRete() {
+    if (!senzaRete) return '';
+    const quando = stato && stato.salvato_il ? ` Ultimo aggiornamento alle ${orario(stato.salvato_il)}.` : '';
+    return `<div class="esito giallo" style="margin:0 0 14px;font-weight:500"><b>Senza rete.</b> Orari, carrozza e alternative funzionano lo stesso; il ritardo potrebbe non essere aggiornato.${quando}</div>`;
   }
 
   // ---------- Rotte ----------
@@ -161,6 +226,7 @@
 
     let html = `
       <h1>Il mio viaggio</h1>
+      ${bannerRete()}
       <div class="semaforo ${c}" role="status">
         <span class="luce" aria-hidden="true"></span>
         <div>
@@ -184,10 +250,7 @@
         </ul>
         <p class="piccolo" style="margin:8px 0 0">${esc(t1.giorni)}. Orari: ${esc(D.fonte)}. I binari vengono dalla nostra ricerca.</p>
       </div>
-      <div class="card band">
-        <h2>${esc(D.carrozza.titolo)}</h2>
-        <p class="muto" style="margin:0">${esc(D.carrozza.testo)}</p>
-      </div>`;
+      ${trenoHtml()}`;
 
     if (!attiva && c === 'verde' && !(mia && ['rifiutata', 'confermata'].includes(mia.stato))) {
       html += '<p class="piccolo">Se il treno ritarda e il cambio diventa stretto, qui compare il bottone per avvisare il capotreno.</p>';
@@ -201,13 +264,64 @@
     const bAnnulla = document.getElementById('annulla');
     if (bAnnulla) bAnnulla.addEventListener('click', async () => {
       bAnnulla.disabled = true;
-      try { await chiama('annulla', { vid }); } catch (e) { mostraErrore(e.message); }
+      if (leggiCoda()) { scriviCoda(null); ultimaFirma = ''; disegna(); return; }
+      try { await chiama('annulla', { vid }); } catch (e) { mostraErrore(e.rete ? 'Senza rete non posso annullare: riprova tra poco.' : e.message); }
       aggiorna(true);
     });
     collegaNotifiche('viaggiatore');
+    schermo.querySelectorAll('[data-carrozza]').forEach((b) =>
+      b.addEventListener('click', () => {
+        scrivi('coinc_carrozza', b.dataset.carrozza);
+        disegna();
+        const box = document.getElementById('box-treno');
+        if (box) box.scrollIntoView({ block: 'nearest' });
+      })
+    );
+  }
+
+  // ---------- Il treno: dove stare per scendere vicino alle scale ----------
+  function trenoHtml() {
+    const T = D.treno;
+    const mia = Number(leggi('coinc_carrozza')) || 0;
+    const giusta = T.carrozza_giusta;
+    // Disegno: coda a sinistra, testa a destra (il treno va verso destra)
+    let vagoni = '';
+    for (let n = T.carrozze; n >= 1; n--) {
+      const cls = ['vagone', n === giusta ? 'giusta' : '', n === mia ? 'mia' : '', n === 1 ? 'testa' : ''].join(' ');
+      vagoni += `<button class="${cls}" data-carrozza="${n}" aria-label="Carrozza ${n}${n === mia ? ', sei qui' : ''}${n === giusta ? ', scendi da qui' : ''}">${n}${n === mia ? '<small>sei qui</small>' : ''}</button>`;
+    }
+    let banchina = '';
+    for (let n = T.carrozze; n >= 1; n--) banchina += `<span>${n === giusta ? '▲' : ''}</span>`;
+    let consiglio = '<p class="muto" style="margin:0">Tocca la carrozza dove sei: il numero è scritto sopra le porte.</p>';
+    if (mia) {
+      const d = mia - giusta;
+      const quante = Math.abs(d) === 1 ? '1 carrozza' : `${Math.abs(d)} carrozze`;
+      consiglio = d === 0
+        ? `<div class="esito verde">Sei nella carrozza giusta. A ${esc(D.viaggio.cambio)} scendi e vai dritto alle ${esc(T.uscita)}.</div>`
+        : `<div class="esito giallo">Spostati di ${quante} verso la ${d > 0 ? 'testa del treno (avanti, dove va il treno)' : 'coda del treno (indietro)'}. Così a ${esc(D.viaggio.cambio)} scendi vicino alle ${esc(T.uscita)}.</div>`;
+    }
+    return `<div class="card band" id="box-treno">
+        <h2>Dove stare sul treno</h2>
+        <div class="treno" role="group" aria-label="Il treno, dalla coda alla testa">
+          <span class="etichetta-treno">coda</span>
+          <div class="vagoni">${vagoni}</div>
+          <span class="etichetta-treno">testa ▶</span>
+        </div>
+        <div class="banchina" aria-hidden="true"><span></span><div class="segni">${banchina}</div><span></span></div>
+        <p class="piccolo" style="margin:2px 0 12px;text-align:center">▲ ${esc(D.viaggio.cambio)}: scendi qui, vicino alle ${esc(T.uscita)}</p>
+        ${consiglio}
+        ${T.verificato ? '' : '<p class="piccolo" style="margin:8px 0 0">Numero di carrozze e posizione delle scale da verificare a Monselice.</p>'}
+      </div>`;
   }
 
   function richiestaHtml(mia, c) {
+    const coda = leggiCoda();
+    if (coda && !(mia && ['inviata', 'vista', 'stiamo_chiedendo', 'nessuna_risposta'].includes(mia.stato))) {
+      return `<div class="card"><h2>La tua richiesta</h2>
+        <div class="esito giallo">In coda: qui non c'è rete. La mandiamo da sola al capotreno appena torna il segnale.</div>
+        <p class="piccolo" style="margin:8px 0 0">Preparata alle ${orario(coda.il)}. Tieni l'app aperta se puoi: si invia prima.</p>
+        <button class="secondario" id="annulla" style="margin-top:12px">Non mi serve più, annulla</button></div>`;
+    }
     const finale = mia && ['confermata', 'rifiutata', 'non_serve_piu'].includes(mia.stato);
     if (!mia || (!finale && !['inviata', 'vista', 'stiamo_chiedendo', 'nessuna_risposta'].includes(mia.stato))) {
       if (c === 'verde') return '';
@@ -265,7 +379,7 @@
         <button class="secondario" id="chiudi">Non ora</button>
       </div>`;
     document.body.appendChild(f);
-    const chiudi = () => { f.remove(); foglioAperto = false; aggiorna(true); };
+    const chiudi = () => { f.remove(); foglioAperto = false; disegna(); aggiorna(true); };
     f.querySelector('#chiudi').addEventListener('click', chiudi);
     f.addEventListener('click', (e) => { if (e.target === f) chiudi(); });
     f.querySelector('#conferma').addEventListener('click', async (e) => {
@@ -275,8 +389,10 @@
       try {
         await chiama('richiesta', { vid, nome });
       } catch (err) {
-        mostraErrore(err.message);
+        if (err.rete) { scriviCoda({ nome, il: new Date().toISOString() }); senzaRete = true; }
+        else mostraErrore(err.message);
       }
+      ultimaFirma = '';
       chiudi();
     });
   }
@@ -484,6 +600,10 @@
   }
   document.querySelector('[data-vai="benvenuto"]').addEventListener('click', (e) => { e.preventDefault(); vai('benvenuto'); });
   document.addEventListener('visibilitychange', () => { if (!document.hidden) aggiorna(true); });
+  window.addEventListener('online', () => aggiorna(true));
+  window.addEventListener('offline', () => { senzaRete = true; ultimaFirma = ''; disegna(); });
+  stato = statoDiRiserva();
+  if (!stato.salvato_il) stato = null;
   disegna();
   aggiorna(true);
   setInterval(() => { if (!document.hidden) aggiorna(false); }, OGNI_MS);

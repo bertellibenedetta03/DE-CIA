@@ -52,9 +52,27 @@ Serve un telefono che fa il viaggiatore e uno che fa il capotreno, più un compu
 10. Prova anche il caso "nessuna risposta": invia una richiesta e lascia il capotreno fermo per 3 minuti. Al viaggiatore compare l'avviso e le alternative.
 11. Alla fine, nella Regia, premi **Ricomincia la prova da capo**.
 
+## Parte D. Provare la carrozza giusta e l'app senza rete
+
+**La carrozza giusta**
+1. Apri l'app come **Viaggiatore** e scorri fino a **Dove stare sul treno**.
+2. Vedi il disegno del treno: la testa è a destra. La carrozza con il bordo verde e il triangolo sotto è quella da cui scendere a Monselice, vicino alle scale.
+3. Tocca la carrozza dove sei (sul treno vero, il numero è scritto sopra le porte).
+4. L'app ti dice, per esempio, "Spostati di 2 carrozze verso la testa del treno". Se sei già in quella giusta, il riquadro diventa verde.
+
+**Senza rete**
+1. Apri l'app almeno una volta **con** la rete, dall'icona sulla schermata Home. Così il telefono si salva orari, disegno e alternative.
+2. Metti il telefono in **modalità aereo** (iPhone: scorri dall'angolo in alto a destra e tocca l'aereo; Android: scorri dall'alto e tocca **Modalità aereo**).
+3. Chiudi l'app e riaprila dall'icona. Deve aprirsi lo stesso, con la scritta gialla **Senza rete** in alto.
+4. Controlla che si vedano orari, disegno del treno e (se la Regia aveva messo un ritardo) il semaforo.
+5. Premi **Avvisa il capotreno**, poi **Sì, avvisa il capotreno**. Compare **In coda: qui non c'è rete**.
+6. Togli la modalità aereo e tieni l'app aperta. Entro pochi secondi la richiesta parte da sola e diventa **Richiesta inviata**. Sul telefono del capotreno compare la persona.
+
+Se riapri l'app più tardi, la richiesta in coda parte appena l'app trova la rete. Con l'app chiusa invece resta in attesa fino alla prossima apertura.
+
 ## Cosa cambiare a mano
 
-- **Orari, carrozza consigliata, alternative, turni del capotreno:** file `app/dati.js`. Gli orari dei treni e le alternative sono veri (orario ufficiale Trenitalia, dati aperti). Le righe con `DA VERIFICARE` (binari, carrozza) e i turni del capotreno sono ancora ipotesi.
+- **Orari, disegno del treno (quante carrozze, quale è quella giusta), alternative, turni del capotreno:** file `app/dati.js`. Gli orari dei treni e le alternative sono veri (orario ufficiale Trenitalia, dati aperti). Le righe con `DA VERIFICARE` (binari, carrozza) e i turni del capotreno sono ancora ipotesi.
 - **Dal 13 dicembre 2026** cambia l'orario: il treno per Bologna parte da Monselice alle 7.29 e il cambio scende a 8 minuti. L'app lo fa da sola.
 - **Minuti per andare dal binario 6 al binario 1** (oggi 4, ipotesi) e **minuti prima dell'avviso "nessuna risposta"** (oggi 3): si cambiano dalla Regia, senza toccare il codice.
 
