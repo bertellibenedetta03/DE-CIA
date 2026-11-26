@@ -1,0 +1,158 @@
+:root {
+  --bg: #fbfaf7;
+  --band: #f1eee7;
+  --ink: #1d1d1b;
+  --muted: #5d5b55;
+  --line: #ddd8cc;
+  --accent: #c8332b;
+  --card: #ffffff;
+  --verde: #1f7a4d;
+  --verde-bg: #e3f3ea;
+  --giallo: #8a6200;
+  --giallo-bg: #fdf1cf;
+  --rosso: #b3261e;
+  --rosso-bg: #fbe3e1;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141413;
+    --band: #1c1c1a;
+    --ink: #f0eee8;
+    --muted: #a9a69d;
+    --line: #34332f;
+    --accent: #e5554c;
+    --card: #222220;
+    --verde: #6fd3a0;
+    --verde-bg: #183326;
+    --giallo: #f0c75a;
+    --giallo-bg: #352c12;
+    --rosso: #ff8a80;
+    --rosso-bg: #3a1b19;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 17px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.barra {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+.logo { font-weight: 800; color: var(--accent); text-decoration: none; letter-spacing: -0.01em; }
+.ruolo-attuale { font-size: 14px; color: var(--muted); }
+main { max-width: 560px; margin: 0 auto; padding: 16px 16px 48px; }
+h1 { font-size: 28px; line-height: 1.2; margin: 8px 0 8px; letter-spacing: -0.01em; }
+h2 { font-size: 19px; margin: 0 0 8px; }
+p { margin: 0 0 12px; }
+.muto { color: var(--muted); font-size: 15px; }
+.piccolo { font-size: 13px; color: var(--muted); }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  margin: 0 0 14px;
+}
+.card.band { background: var(--band); }
+
+button, .bottone {
+  display: block; width: 100%;
+  font: inherit; font-weight: 650;
+  padding: 14px 16px; margin: 0 0 10px;
+  border-radius: 12px; border: 1px solid var(--line);
+  background: var(--card); color: var(--ink);
+  text-align: left; cursor: pointer; text-decoration: none;
+}
+button:active { transform: scale(0.99); }
+button:disabled { opacity: 0.5; cursor: default; }
+button.primario { background: var(--accent); border-color: var(--accent); color: #fff; text-align: center; }
+button.secondario { text-align: center; }
+button.verde { background: var(--verde-bg); border-color: var(--verde); color: var(--verde); }
+button.rosso { background: var(--rosso-bg); border-color: var(--rosso); color: var(--rosso); }
+.scelta-ruolo small { display: block; font-weight: 400; color: var(--muted); font-size: 14px; margin-top: 2px; }
+a { color: var(--accent); }
+
+/* Viaggio */
+.tratta { list-style: none; margin: 0; padding: 0; }
+.tratta li { display: grid; grid-template-columns: 56px 1fr; gap: 10px; padding: 6px 0; }
+.tratta .ora { font-weight: 700; font-variant-numeric: tabular-nums; }
+.tratta .ora s { color: var(--muted); font-weight: 400; display: block; font-size: 13px; }
+.tratta .cambio { border-top: 1px dashed var(--line); border-bottom: 1px dashed var(--line); margin: 4px 0; color: var(--muted); font-size: 15px; }
+
+.semaforo { display: flex; gap: 14px; align-items: center; border-radius: 14px; padding: 16px; margin: 0 0 14px; }
+.semaforo .luce { width: 44px; height: 44px; border-radius: 50%; flex: none; }
+.semaforo .numero { font-size: 34px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.semaforo.verde { background: var(--verde-bg); color: var(--verde); }
+.semaforo.verde .luce { background: var(--verde); }
+.semaforo.giallo { background: var(--giallo-bg); color: var(--giallo); }
+.semaforo.giallo .luce { background: var(--giallo); }
+.semaforo.rosso { background: var(--rosso-bg); color: var(--rosso); }
+.semaforo.rosso .luce { background: var(--rosso); }
+.conto { font-size: 14px; color: var(--muted); margin-top: -6px; margin-bottom: 14px; }
+
+/* Stato richiesta */
+.passi { list-style: none; padding: 0; margin: 8px 0 0; }
+.passi li { position: relative; padding: 0 0 14px 28px; color: var(--muted); }
+.passi li::before {
+  content: ""; position: absolute; left: 4px; top: 5px;
+  width: 12px; height: 12px; border-radius: 50%;
+  border: 2px solid var(--line); background: var(--bg);
+}
+.passi li.fatto { color: var(--ink); }
+.passi li.fatto::before { background: var(--accent); border-color: var(--accent); }
+.passi li.ora { color: var(--ink); font-weight: 700; }
+.passi li.ora::before { border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent); }
+.esito { border-radius: 12px; padding: 14px; font-weight: 650; margin: 8px 0 0; }
+.esito.verde { background: var(--verde-bg); color: var(--verde); }
+.esito.rosso { background: var(--rosso-bg); color: var(--rosso); }
+.esito.giallo { background: var(--giallo-bg); color: var(--giallo); }
+
+.alternativa { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+.alternativa:first-of-type { border-top: 0; }
+.alternativa .arrivo { font-weight: 800; white-space: nowrap; }
+
+/* Capotreno */
+.agenda { list-style: none; padding: 0; margin: 0; }
+.agenda li { padding: 10px 0; border-top: 1px solid var(--line); }
+.agenda li:first-child { border-top: 0; }
+.agenda li.oggi { font-weight: 700; }
+.agenda li.oggi .giorno::after { content: " · oggi"; color: var(--accent); }
+.agenda .treni { font-weight: 400; font-size: 14px; color: var(--muted); }
+.conteggio { font-size: 44px; font-weight: 800; line-height: 1; color: var(--accent); }
+.persone { list-style: none; padding: 0; margin: 10px 0 0; font-size: 15px; }
+.persone li { display: flex; justify-content: space-between; padding: 6px 0; border-top: 1px solid var(--line); }
+.etichetta { font-size: 13px; padding: 2px 8px; border-radius: 99px; background: var(--band); color: var(--muted); white-space: nowrap; }
+
+/* Regia */
+.griglia { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+.griglia button { margin: 0; text-align: center; }
+.griglia button.scelto { background: var(--accent); border-color: var(--accent); color: #fff; }
+label { display: block; font-weight: 600; margin: 10px 0 4px; }
+input[type="number"], input[type="text"] {
+  font: inherit; width: 100%; padding: 12px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--card); color: var(--ink);
+}
+.riga { display: flex; gap: 8px; }
+.riga > * { flex: 1; }
+
+.foglio {
+  position: fixed; inset: 0; z-index: 10;
+  background: rgba(0,0,0,0.4);
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.foglio .card { width: 100%; max-width: 560px; margin: 0; border-radius: 18px 18px 0 0; padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
+
+.avviso-errore {
+  position: fixed; left: 16px; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom));
+  max-width: 528px; margin: 0 auto;
+  background: var(--rosso-bg); color: var(--rosso);
+  border: 1px solid var(--rosso); border-radius: 12px; padding: 12px 14px; font-size: 15px;
+}

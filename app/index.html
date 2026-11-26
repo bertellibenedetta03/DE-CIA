@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Coincidenze</title>
+  <meta name="description" content="Prototipo DE CIA: avvisa il capotreno quando rischi di perdere la coincidenza.">
+  <meta name="theme-color" content="#c8332b">
+  <link rel="manifest" href="/app/manifest.webmanifest">
+  <link rel="icon" href="/app/icone/icona.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/app/icone/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Coincidenze">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="stylesheet" href="/app/app.css">
+</head>
+<body>
+  <header class="barra">
+    <a class="logo" href="#" data-vai="benvenuto">Coincidenze</a>
+    <span class="ruolo-attuale" id="ruolo-attuale"></span>
+  </header>
+
+  <main id="schermo" aria-live="polite"></main>
+
+  <p class="avviso-errore" id="errore" hidden></p>
+
+  <script src="/app/dati.js"></script>
+  <script src="/app/app.js"></script>
+</body>
+</html>

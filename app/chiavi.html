@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Chiavi notifiche</title>
+  <link rel="stylesheet" href="/app/app.css">
+</head>
+<body>
+  <main>
+    <h1>Chiavi per le notifiche</h1>
+    <p class="muto">Questa pagina crea le due chiavi che servono all'app per mandare notifiche. Le crea il tuo browser, qui sul tuo computer: non vengono salvate né inviate a nessuno. Se ricarichi la pagina ne escono due nuove, va bene lo stesso.</p>
+    <button class="primario" id="genera">Crea le chiavi</button>
+    <div id="risultato" hidden>
+      <div class="card">
+        <h2>1. VAPID_PUBLIC_KEY</h2>
+        <input type="text" id="pub" readonly>
+        <div style="height:8px"></div>
+        <button class="secondario" data-copia="pub">Copia</button>
+      </div>
+      <div class="card">
+        <h2>2. VAPID_PRIVATE_KEY</h2>
+        <input type="text" id="priv" readonly>
+        <div style="height:8px"></div>
+        <button class="secondario" data-copia="priv">Copia</button>
+        <p class="piccolo" style="margin:0">Questa è segreta: incollala solo su Vercel, mai in chat o in un'email.</p>
+      </div>
+      <p class="muto">Poi segui la guida: su Vercel aggiungi le due variabili con questi nomi esatti, e fai Redeploy.</p>
+    </div>
+  </main>
+  <script>
+    const b64url = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    document.getElementById('genera').addEventListener('click', async () => {
+      const k = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
+      const pub = await crypto.subtle.exportKey('raw', k.publicKey);
+      const jwk = await crypto.subtle.exportKey('jwk', k.privateKey);
+      document.getElementById('pub').value = b64url(pub);
+      document.getElementById('priv').value = jwk.d;
+      document.getElementById('risultato').hidden = false;
+    });
+    document.querySelectorAll('[data-copia]').forEach((b) =>
+      b.addEventListener('click', async () => {
+        const campo = document.getElementById(b.dataset.copia);
+        try { await navigator.clipboard.writeText(campo.value); } catch (e) { campo.select(); document.execCommand('copy'); }
+        b.textContent = 'Copiata';
+        setTimeout(() => (b.textContent = 'Copia'), 1500);
+      })
+    );
+  </script>
+</body>
+</html>
