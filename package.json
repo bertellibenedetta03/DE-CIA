@@ -1,0 +1,8 @@
+{
+  "name": "de-cia",
+  "private": true,
+  "description": "DE CIA · sito e prototipo dell'app Coincidenze",
+  "dependencies": {
+    "web-push": "3.6.7"
+  }
+}
