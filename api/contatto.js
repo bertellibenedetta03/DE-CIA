@@ -54,13 +54,18 @@ function codiceErrore(messaggio) {
   if (/PGRST205|42P01|does not exist|Could not find the table/i.test(messaggio)) return 'S3 · manca la tabella messaggi';
   if (/42501|permission denied/i.test(messaggio)) return 'S4 · permessi della tabella messaggi';
   if (/fetch failed|ENOTFOUND|Invalid URL/i.test(messaggio)) return 'S5 · SUPABASE_URL sbagliato';
-  return 'S9 · altro (vedi Logs su Vercel)';
+  if (/S6/.test(messaggio)) return 'S6 · SUPABASE_URL deve essere tipo https://xxxx.supabase.co';
+  if (/PGRST106|PGRST002|no Route matched|Invalid schema/i.test(messaggio)) return 'S7 · Data API di Supabase disattivata o schema public non esposto';
+  if (/Unexpected token|not valid JSON/i.test(messaggio)) return 'S6 · SUPABASE_URL deve essere tipo https://xxxx.supabase.co';
+  const stato = (messaggio.match(/Supabase (\d{3})/) || [])[1];
+  return `S9 · altro${stato ? ' ' + stato : ''} (vedi Logs su Vercel)`;
 }
 
 async function salvaSuSupabase(riga) {
   const url = urlSupabase();
   const chiave = chiaveSupabase();
   if (!url || !chiave) throw new Error('Supabase non configurato');
+  if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(url)) throw new Error('S6 URL non valido');
 
   const headers = {
     apikey: chiave,
