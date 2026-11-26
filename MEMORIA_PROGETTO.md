@@ -19,3 +19,8 @@ Cartella **"DE CIA - COINCIDENZE"**, con i PDF della ricerca sui viaggi in treno
 - La catena decisionale
 - Dove si rompe il viaggio
 - Tre scoperte
+
+## Strumenti
+
+- **Sito:** pagina statica (index.html + style.css) pubblicata gratis su Vercel da main.
+- **Database:** Supabase, piano gratuito, progetto "DE-CIA". Struttura, dati e guida nella cartella `supabase/` (vedi `supabase/GUIDA.md`); file originali nel bucket privato "ricerca".
