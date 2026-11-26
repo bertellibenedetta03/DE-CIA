@@ -287,16 +287,27 @@ comment on table contenuti is 'Tutti gli altri testi dei file, sezione per sezio
 -- ---------------------------------------------------------------------
 -- SICUREZZA: RLS attiva ovunque, nessun accesso pubblico
 -- ---------------------------------------------------------------------
-do $$
-declare t text;
-begin
-  foreach t in array array[
-    'progetto_info','team','documenti','fonti','riferimenti_intervista',
-    'cluster_attori','attori','tipi_flusso','flussi','catena_passaggi',
-    'schema_nodi','schema_archi','chi_decide_cosa','journey','journey_bisogni',
-    'journey_fasi','journey_elementi','mattina_segmenti','punti_rottura',
-    'chi_sa_cosa','scoperte','stato_avanzamento','domande_aperte','contenuti'
-  ] loop
-    execute format('alter table public.%I enable row level security', t);
-  end loop;
-end $$;
+alter table public.progetto_info enable row level security;
+alter table public.team enable row level security;
+alter table public.documenti enable row level security;
+alter table public.fonti enable row level security;
+alter table public.riferimenti_intervista enable row level security;
+alter table public.cluster_attori enable row level security;
+alter table public.attori enable row level security;
+alter table public.tipi_flusso enable row level security;
+alter table public.flussi enable row level security;
+alter table public.catena_passaggi enable row level security;
+alter table public.schema_nodi enable row level security;
+alter table public.schema_archi enable row level security;
+alter table public.chi_decide_cosa enable row level security;
+alter table public.journey enable row level security;
+alter table public.journey_bisogni enable row level security;
+alter table public.journey_fasi enable row level security;
+alter table public.journey_elementi enable row level security;
+alter table public.mattina_segmenti enable row level security;
+alter table public.punti_rottura enable row level security;
+alter table public.chi_sa_cosa enable row level security;
+alter table public.scoperte enable row level security;
+alter table public.stato_avanzamento enable row level security;
+alter table public.domande_aperte enable row level security;
+alter table public.contenuti enable row level security;

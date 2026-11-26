@@ -293,19 +293,30 @@ comment on table contenuti is 'Tutti gli altri testi dei file, sezione per sezio
 -- ---------------------------------------------------------------------
 -- SICUREZZA: RLS attiva ovunque, nessun accesso pubblico
 -- ---------------------------------------------------------------------
-do $$
-declare t text;
-begin
-  foreach t in array array[
-    'progetto_info','team','documenti','fonti','riferimenti_intervista',
-    'cluster_attori','attori','tipi_flusso','flussi','catena_passaggi',
-    'schema_nodi','schema_archi','chi_decide_cosa','journey','journey_bisogni',
-    'journey_fasi','journey_elementi','mattina_segmenti','punti_rottura',
-    'chi_sa_cosa','scoperte','stato_avanzamento','domande_aperte','contenuti'
-  ] loop
-    execute format('alter table public.%I enable row level security', t);
-  end loop;
-end $$;
+alter table public.progetto_info enable row level security;
+alter table public.team enable row level security;
+alter table public.documenti enable row level security;
+alter table public.fonti enable row level security;
+alter table public.riferimenti_intervista enable row level security;
+alter table public.cluster_attori enable row level security;
+alter table public.attori enable row level security;
+alter table public.tipi_flusso enable row level security;
+alter table public.flussi enable row level security;
+alter table public.catena_passaggi enable row level security;
+alter table public.schema_nodi enable row level security;
+alter table public.schema_archi enable row level security;
+alter table public.chi_decide_cosa enable row level security;
+alter table public.journey enable row level security;
+alter table public.journey_bisogni enable row level security;
+alter table public.journey_fasi enable row level security;
+alter table public.journey_elementi enable row level security;
+alter table public.mattina_segmenti enable row level security;
+alter table public.punti_rottura enable row level security;
+alter table public.chi_sa_cosa enable row level security;
+alter table public.scoperte enable row level security;
+alter table public.stato_avanzamento enable row level security;
+alter table public.domande_aperte enable row level security;
+alter table public.contenuti enable row level security;
 
 
 -- =====================================================================
@@ -2004,7 +2015,289 @@ I pallini colorati nella riga Attori rimandano ai sei cluster della actors map, 
 
 Le barre delle emozioni sono inventate da me per dare una forma alla curva: sono il primo dato da sostituire.
 
-Struttura ripresa dal modello Journey Map che hai caricato. Righe aggiunte rispetto a quel modello: Attori coinvolti, per agganciare la journey alla actors map.', null, 'La journey dello studente è testo; le journey del capotreno e del capostazione nel PDF sono immagini, quindi sono state trascritte leggendo le immagini. Tutto è anche in journey, journey_fasi, journey_elementi.'),
+Struttura ripresa dal modello Journey Map che hai caricato. Righe aggiunte rispetto a quel modello: Attori coinvolti, per agganciare la journey alla actors map.', 'Trascrizione delle due journey che nel PDF sono immagini. ''? '' = testo arancione (ipotesi). Pallino pieno = attore con fonte; pallino vuoto = attore dedotto.
+
+USER JOURNEY · CAPOTRENO
+Bevilacqua → Monselice → Ferrara · cambio di 4 minuti a Monselice · stesso scenario della journey dello studente pendolare
+BOZZA: le righe in arancione sono ipotesi, da confermare o correggere.
+Bisogni primari:
+— Conosce già il ritardo e potrebbe avvisare (il dato esiste)
+— ? Sapere chi ha una coincidenza da prendere
+— ? Poter chiedere l''attesa del treno 2 senza passare solo dal telefono
+
+FASE 1. Presa servizio (Pre-servizio) — prima delle 6.44 · Bevilacqua
+Comportamenti: Prende servizio → Controlla il treno
+Canali: Fisico, Digitale
+Emozioni (stima dalle barre, tutta da verificare): soddisfatto 55, incerto 30, frustrato 5 su 100
+Azioni principali:
+  ? Riceve il turno e controlla la composizione del treno
+  ? Controlla gli avvisi di circolazione sulla linea
+  ? Sale sul regionale a Bevilacqua
+Touchpoints:
+  ? Foglio turno
+  ? Palmare / tablet
+Attori coinvolti:
+  — Impresa ferroviaria (pallino vuoto)
+  — Sala operativa (pallino pieno)
+Domande:
+  ? “Ci sono ritardi sulla linea oggi?”
+  ? “Il palmare funziona?”
+Criticità:
+  ? Le informazioni sulla linea arrivano frammentate
+  ? Non è chiaro quali strumenti abbia davvero
+Opportunità:
+  ? Briefing con le coincidenze più a rischio del giorno
+
+FASE 2. Viaggio sul treno 1 (Servizio) — 6.44 – 7.26 · Bevilacqua → Monselice
+Comportamenti: Viaggia → Controlla l''orario
+Canali: Fisico, Vocale
+Emozioni (stima dalle barre, tutta da verificare): soddisfatto 65, incerto 25, frustrato 5 su 100
+Azioni principali:
+  — Viaggia 42 minuti fino a Monselice
+  ? Fa gli annunci a bordo
+  ? Controlla i biglietti e assiste i passeggeri
+Touchpoints:
+  — Carrozza del regionale
+  ? Annunci di bordo
+Attori coinvolti:
+  — Capotreno 1 (pallino vuoto)
+  — Macchinisti (pallino vuoto)
+  — Altri passeggeri (pallino vuoto)
+Domande:
+  ? “Siamo in orario?”
+  ? “Chi ha una coincidenza a Monselice?”
+Criticità:
+  — Il ritardo si accumula durante il viaggio e nessuno dice se mette a rischio la coincidenza
+  ? Non sa chi ha una coincidenza da prendere
+Opportunità:
+  — Avviso a bordo quando il ritardo mette a rischio la coincidenza
+  — Il dato esiste già: lo conosce il capotreno e il DCO
+
+FASE 3. Ritardo e decisione (Servizio) — durante il viaggio · se il treno 1 è in ritardo
+Comportamenti: Telefona → Aspetta la risposta
+Canali: Vocale, Digitale
+Emozioni (stima dalle barre, tutta da verificare): soddisfatto 15, incerto 55, frustrato 40 su 100
+Azioni principali:
+  — Il ritardo passa per telefono lungo la catena della coincidenza
+  ? Chiede alla sala operativa se il treno 2 può aspettare
+  ? Aspetta una risposta
+Touchpoints:
+  — Telefono di servizio
+  ? Palmare / tablet
+Attori coinvolti:
+  — Sala operativa (pallino pieno)
+  — RFI (pallino pieno)
+  — Capostazione (pallino pieno)
+Domande:
+  ? “Il treno 2 ci aspetta?”
+  ? “Chi decide e quando risponde?”
+Criticità:
+  — Il coordinamento tra RFI e sala operativa non funziona
+  — La richiesta di attendere parte solo se il viaggiatore la fa al capotreno
+Opportunità:
+  — Rendere automatica la richiesta di attesa, invece che su iniziativa del passeggero
+
+FASE 4. Il cambio a Monselice (Servizio) — 7.26 – 7.30 · 4 minuti [fase critica]
+Comportamenti: Annuncia il binario → Risponde ai passeggeri
+Canali: Fisico, Vocale
+Emozioni (stima dalle barre, tutta da verificare): soddisfatto 5, incerto 45, frustrato 75 su 100
+Azioni principali:
+  — Arriva a Monselice alle 7.26
+  ? Annuncia il binario del treno per Bologna
+  ? Risponde ai passeggeri che hanno fretta
+Touchpoints:
+  — Banchina e sottopasso di Monselice
+  — Annunci sonori
+  ? Contatto diretto con i passeggeri
+Attori coinvolti:
+  — Capostazione (pallino pieno)
+  — Capotreno 2 (pallino vuoto)
+  — Stazione di cambio (pallino vuoto)
+  — Altri passeggeri (pallino vuoto)
+Domande:
+  ? “Posso trattenere i passeggeri o chiedere l''attesa?”
+  ? “Come spiego il binario senza gergo?”
+Criticità:
+  — Quattro minuti di margine: qualsiasi ritardo fa saltare la coincidenza
+  — Gli annunci in gergo ferroviario non vengono capiti
+  — Il biglietto non garantisce la coincidenza
+  ? Non è chiaro cosa può promettere al viaggiatore
+Opportunità:
+  — Tabelloni di binario con i prossimi tre o quattro treni
+  ? Frasi standard senza gergo per gli annunci
+
+FASE 5. Dopo il cambio (Post-servizio) — se la coincidenza salta
+Comportamenti: Indirizza → Segnala l''evento
+Canali: Fisico, Digitale
+Emozioni (stima dalle barre, tutta da verificare): soddisfatto 20, incerto 40, frustrato 45 su 100
+Azioni principali:
+  — Se la coincidenza salta non esiste un piano: si aspetta il treno dopo
+  ? Rimanda i passeggeri alla biglietteria
+  ? Segnala l''evento nel rapporto di servizio
+Touchpoints:
+  — Biglietteria
+  ? Rapporto di servizio
+Attori coinvolti:
+  — Biglietteria (pallino pieno)
+  — Capostazione (pallino pieno)
+Domande:
+  ? “Come finisce per chi ha perso la coincidenza?”
+  ? “Il mio rapporto serve a qualcosa?”
+Criticità:
+  — Il rimborso chiesto in biglietteria non viene accolto
+  — I bus sostitutivi sono previsti solo in caso di soppressione
+  ? Nessun ritorno sul rapporto inviato
+Opportunità:
+  — Dire subito cosa succede se la coincidenza salta: quando passa il prossimo treno e a cosa si ha diritto
+
+Come leggere questa bozza: vedi tabella journey, colonna come_leggere.
+
+USER JOURNEY · CAPOSTAZIONE
+Stazione di cambio sulla linea Bologna–Padova · scenario: cambio di 4 minuti a Monselice (7.26–7.30) · basata sull''intervista al capostazione
+BOZZA: le righe in arancione sono ipotesi, da confermare o correggere.
+Bisogni primari:
+— Rispettare l''orario dei treni viaggiatori
+— Venire incontro al viaggiatore, se i tempi lo permettono
+— Avere il nulla osta del Dirigente Centrale prima di trattenere un treno
+— ? Sapere in anticipo chi ha una coincidenza da prendere
+
+FASE 1. Orario e fasce di punta (Pre-servizio) — prima della mattina · stazione di cambio
+Comportamenti: Legge l''orario → Pesa le fasce di punta
+Canali: Fisico, Vocale
+Emozioni (stima dalle barre, tutta da verificare): soddisfatto 60, incerto 30, frustrato 5 su 100
+Azioni principali:
+  — Ha davanti l''orario: ogni treno ha un arrivo e una partenza
+  — Sa che nelle fasce di punta i treni dei pendolari hanno più importanza
+  ? Controlla gli avvisi di circolazione
+Touchpoints:
+  — Orario dei treni
+  ? Telefono di servizio
+Attori coinvolti:
+  — Capostazione (pallino pieno)
+  — Dirigente Centrale (Bologna) (pallino pieno)
+  — Pendolari (pallino pieno)
+Domande:
+  ? “Il treno viaggiatori rispetta l''orario?”
+  ? “Quali treni oggi contano di più?”
+Criticità:
+  — Le coincidenze e i comporti non sono più normati: il vecchio RCT li prevedeva, oggi non esistono
+  ? Nessuna regola scritta a cui appoggiarsi quando arriva una richiesta
+Opportunità:
+  ? Una regola scritta sulle coincidenze nelle fasce di punta
+
+FASE 2. Treno 1 in arrivo (Servizio) — 7.00 – 7.26 · gestione ordinaria
+Comportamenti: Assegna il binario → Segue l''arrivo
+Canali: Fisico, Vocale
+Emozioni (stima dalle barre, tutta da verificare): soddisfatto 65, incerto 25, frustrato 5 su 100
+Azioni principali:
+  — Gestisce la circolazione dei treni dentro la propria stazione
+  — Può ricevere un treno su un binario senza dare spiegazioni al Dirigente Centrale
+  — Il Dirigente Centrale gestisce i treni in linea dalla sede di Bologna
+Touchpoints:
+  — Binari della stazione
+  — Tabelloni sui binari (solo il prossimo treno)
+  — Altoparlanti
+Attori coinvolti:
+  — Capostazione (pallino pieno)
+  — Dirigente Centrale (Bologna) (pallino pieno)
+  — Pendolari (pallino pieno)
+Domande:
+  ? “Il treno 1 arriva in orario?”
+  ? “Su quale binario lo ricevo?”
+Criticità:
+  — Per i treni viaggiatori il rispetto dell''orario è fondamentale
+  — Possono capitare mille situazioni singolari fuori dall''orario
+  ? Un ritardo del treno 1 non gli arriva in anticipo
+Opportunità:
+  ? Avviso anticipato dal capotreno sui passeggeri con un cambio
+
+FASE 3. La telefonata del capotreno (Servizio) — poco prima delle 7.26 · se il treno 1 è in ritardo
+Comportamenti: Riceve la richiesta → Valuta la fattibilità
+Canali: Vocale
+Emozioni (stima dalle barre, tutta da verificare): soddisfatto 35, incerto 50, frustrato 15 su 100
+Azioni principali:
+  — Il capotreno telefona: un passeggero in arrivo (es. da Ravenna) non deve perdere l''ultimo treno per Padova
+  — Valuta se la cosa è fattibile
+  — Se si parla di pochi minuti, cerca di venire incontro al viaggiatore
+Touchpoints:
+  — Telefono di servizio
+  — Orario del treno in coincidenza
+Attori coinvolti:
+  — Capotreno (pallino pieno)
+  — Capostazione (pallino pieno)
+  — Viaggiatore con coincidenza (pallino pieno)
+Domande:
+  ? “Quanti minuti servono per tenere fermo il treno?”
+  ? “Decido io o devo chiamare Bologna?”
+Criticità:
+  — La richiesta arriva solo a telefono e solo se il capotreno la fa
+  — Se il tempo di attesa è maggiore, non può decidere da solo
+  ? Non sa quanti passeggeri sono coinvolti
+Opportunità:
+  — Rendere automatica la richiesta di attesa, invece che su iniziativa del passeggero
+  ? Vedere quanti passeggeri hanno un cambio prima di decidere
+
+FASE 4. Trattenere il treno? (Servizio) — 7.26 – 7.30 · 4 minuti [fase critica]
+Comportamenti: Chiama il Dirigente → Aspetta il benestare
+Canali: Vocale, Fisico
+Emozioni (stima dalle barre, tutta da verificare): soddisfatto 5, incerto 50, frustrato 65 su 100
+Azioni principali:
+  — Se serve più tempo, spiega il problema al Dirigente Centrale a Bologna e chiede il benestare
+  — Il Dirigente Centrale si interfaccia con il Responsabile dell''impresa ferroviaria (Trenitalia) e comunica il da farsi
+  — Se il Dirigente Centrale ordina di trattenere, ha l''obbligo di ottemperare
+  — Normalmente si cerca di agevolare il viaggiatore
+Touchpoints:
+  — Telefono con il Dirigente Centrale
+  — Nulla osta del Dirigente Centrale
+  — Annunci sonori in stazione
+Attori coinvolti:
+  — Dirigente Centrale (Bologna) (pallino pieno)
+  — Resp. impresa ferroviaria (Trenitalia) (pallino pieno)
+  — Sala Operativa TPER (pallino pieno)
+  — Capostazione (pallino pieno)
+Domande:
+  ? “Quanto posso trattenere senza danneggiare gli altri treni?”
+  ? “Arriverà il benestare?”
+  ? “Chi avvisa il capotreno del treno 2?”
+Criticità:
+  — Più di pochi minuti richiede la catena capostazione → Dirigente Centrale → impresa → capostazione
+  — RFI e Sala Operativa TPER viaggiano su binari paralleli: ci provano da anni con pessimi risultati
+  — Senza norma, tutto dipende dal benestare del momento
+Opportunità:
+  ? Un canale unico condiviso tra capostazione, Dirigente Centrale e impresa
+  ? Un criterio scritto sui minuti di attesa accettabili
+
+FASE 5. Dopo il cambio (Post-servizio) — viaggiatori e coincidenza saltata
+Comportamenti: Parla ai viaggiatori → Indirizza all''attesa
+Canali: Fisico, Vocale
+Emozioni (stima dalle barre, tutta da verificare): soddisfatto 25, incerto 40, frustrato 40 su 100
+Azioni principali:
+  — Se il treno parte, i pendolari la prendono con filosofia
+  — Chi non conosce il regolamento va in biglietteria a chiedere il rimborso, inutilmente
+  — Con chi protesta cerca di andare incontro finché ci sono educazione e rispetto
+  — Se un treno è soppresso, mette in piedi autobus sostitutivi
+Touchpoints:
+  — Biglietteria
+  — Altoparlanti (oggi in italiano chiaro)
+  — Tabelloni sui binari
+Attori coinvolti:
+  — Pendolari (pallino pieno)
+  — Viaggiatori non informati (pallino pieno)
+  — Biglietteria (pallino pieno)
+  — Bus sostitutivi (pallino pieno)
+Domande:
+  ? “Quando passa il prossimo treno?”
+  ? “Posso avere il rimborso?”
+Criticità:
+  — Il rimborso chiesto in biglietteria non viene accolto
+  — Bus: tempi di attesa altissimi; con un treno all''ora conviene aspettare il successivo
+  — Un tempo gli annunci erano in gergo ferroviario e il 95% non li capiva (oggi migliorati)
+Opportunità:
+  — Tabelloni con i prossimi 3 o 4 treni sul binario, come in Germania: tranquillizzerebbe i viaggiatori (proposta del capostazione)
+  ? Dire subito cosa succede se la coincidenza salta e a cosa si ha diritto
+
+Come leggere questa bozza: vedi tabella journey, colonna come_leggere.
+', 'La journey dello studente è testo; le journey del capotreno e del capostazione nel PDF sono immagini, quindi sono state trascritte leggendo le immagini. Tutto è anche in journey, journey_fasi, journey_elementi.'),
   ('memoria_progetto', 'Memoria del progetto', 'MEMORIA_PROGETTO.md', 'md', 1, 'repository GitHub', 'Memoria del progetto DE CIA: team, tempo disponibile, obiettivo di coordinamento, elenco del materiale di ricerca.', null, '26 novembre 2026', 'Scritta con Claude.', 'ricerca/memoria-progetto.md', '# Memoria del progetto DE CIA
 
 _Ultimo aggiornamento: 26 novembre 2026_
@@ -2498,290 +2791,6 @@ insert into journey_elementi (journey, fase, riga, ordine, testo, ipotesi, attor
   ('capostazione', 4, 'opportunita', 2, 'Un criterio scritto sui minuti di attesa accettabili', true, null),
   ('capostazione', 5, 'opportunita', 1, 'Tabelloni con i prossimi 3 o 4 treni sul binario, come in Germania: tranquillizzerebbe i viaggiatori (proposta del capostazione)', false, null),
   ('capostazione', 5, 'opportunita', 2, 'Dire subito cosa succede se la coincidenza salta e a cosa si ha diritto', true, null);
-
-update documenti set trascrizione = 'Trascrizione delle due journey che nel PDF sono immagini. ''? '' = testo arancione (ipotesi). Pallino pieno = attore con fonte; pallino vuoto = attore dedotto.
-
-USER JOURNEY · CAPOTRENO
-Bevilacqua → Monselice → Ferrara · cambio di 4 minuti a Monselice · stesso scenario della journey dello studente pendolare
-BOZZA: le righe in arancione sono ipotesi, da confermare o correggere.
-Bisogni primari:
-— Conosce già il ritardo e potrebbe avvisare (il dato esiste)
-— ? Sapere chi ha una coincidenza da prendere
-— ? Poter chiedere l''attesa del treno 2 senza passare solo dal telefono
-
-FASE 1. Presa servizio (Pre-servizio) — prima delle 6.44 · Bevilacqua
-Comportamenti: Prende servizio → Controlla il treno
-Canali: Fisico, Digitale
-Emozioni (stima dalle barre, tutta da verificare): soddisfatto 55, incerto 30, frustrato 5 su 100
-Azioni principali:
-  ? Riceve il turno e controlla la composizione del treno
-  ? Controlla gli avvisi di circolazione sulla linea
-  ? Sale sul regionale a Bevilacqua
-Touchpoints:
-  ? Foglio turno
-  ? Palmare / tablet
-Attori coinvolti:
-  — Impresa ferroviaria (pallino vuoto)
-  — Sala operativa (pallino pieno)
-Domande:
-  ? “Ci sono ritardi sulla linea oggi?”
-  ? “Il palmare funziona?”
-Criticità:
-  ? Le informazioni sulla linea arrivano frammentate
-  ? Non è chiaro quali strumenti abbia davvero
-Opportunità:
-  ? Briefing con le coincidenze più a rischio del giorno
-
-FASE 2. Viaggio sul treno 1 (Servizio) — 6.44 – 7.26 · Bevilacqua → Monselice
-Comportamenti: Viaggia → Controlla l''orario
-Canali: Fisico, Vocale
-Emozioni (stima dalle barre, tutta da verificare): soddisfatto 65, incerto 25, frustrato 5 su 100
-Azioni principali:
-  — Viaggia 42 minuti fino a Monselice
-  ? Fa gli annunci a bordo
-  ? Controlla i biglietti e assiste i passeggeri
-Touchpoints:
-  — Carrozza del regionale
-  ? Annunci di bordo
-Attori coinvolti:
-  — Capotreno 1 (pallino vuoto)
-  — Macchinisti (pallino vuoto)
-  — Altri passeggeri (pallino vuoto)
-Domande:
-  ? “Siamo in orario?”
-  ? “Chi ha una coincidenza a Monselice?”
-Criticità:
-  — Il ritardo si accumula durante il viaggio e nessuno dice se mette a rischio la coincidenza
-  ? Non sa chi ha una coincidenza da prendere
-Opportunità:
-  — Avviso a bordo quando il ritardo mette a rischio la coincidenza
-  — Il dato esiste già: lo conosce il capotreno e il DCO
-
-FASE 3. Ritardo e decisione (Servizio) — durante il viaggio · se il treno 1 è in ritardo
-Comportamenti: Telefona → Aspetta la risposta
-Canali: Vocale, Digitale
-Emozioni (stima dalle barre, tutta da verificare): soddisfatto 15, incerto 55, frustrato 40 su 100
-Azioni principali:
-  — Il ritardo passa per telefono lungo la catena della coincidenza
-  ? Chiede alla sala operativa se il treno 2 può aspettare
-  ? Aspetta una risposta
-Touchpoints:
-  — Telefono di servizio
-  ? Palmare / tablet
-Attori coinvolti:
-  — Sala operativa (pallino pieno)
-  — RFI (pallino pieno)
-  — Capostazione (pallino pieno)
-Domande:
-  ? “Il treno 2 ci aspetta?”
-  ? “Chi decide e quando risponde?”
-Criticità:
-  — Il coordinamento tra RFI e sala operativa non funziona
-  — La richiesta di attendere parte solo se il viaggiatore la fa al capotreno
-Opportunità:
-  — Rendere automatica la richiesta di attesa, invece che su iniziativa del passeggero
-
-FASE 4. Il cambio a Monselice (Servizio) — 7.26 – 7.30 · 4 minuti [fase critica]
-Comportamenti: Annuncia il binario → Risponde ai passeggeri
-Canali: Fisico, Vocale
-Emozioni (stima dalle barre, tutta da verificare): soddisfatto 5, incerto 45, frustrato 75 su 100
-Azioni principali:
-  — Arriva a Monselice alle 7.26
-  ? Annuncia il binario del treno per Bologna
-  ? Risponde ai passeggeri che hanno fretta
-Touchpoints:
-  — Banchina e sottopasso di Monselice
-  — Annunci sonori
-  ? Contatto diretto con i passeggeri
-Attori coinvolti:
-  — Capostazione (pallino pieno)
-  — Capotreno 2 (pallino vuoto)
-  — Stazione di cambio (pallino vuoto)
-  — Altri passeggeri (pallino vuoto)
-Domande:
-  ? “Posso trattenere i passeggeri o chiedere l''attesa?”
-  ? “Come spiego il binario senza gergo?”
-Criticità:
-  — Quattro minuti di margine: qualsiasi ritardo fa saltare la coincidenza
-  — Gli annunci in gergo ferroviario non vengono capiti
-  — Il biglietto non garantisce la coincidenza
-  ? Non è chiaro cosa può promettere al viaggiatore
-Opportunità:
-  — Tabelloni di binario con i prossimi tre o quattro treni
-  ? Frasi standard senza gergo per gli annunci
-
-FASE 5. Dopo il cambio (Post-servizio) — se la coincidenza salta
-Comportamenti: Indirizza → Segnala l''evento
-Canali: Fisico, Digitale
-Emozioni (stima dalle barre, tutta da verificare): soddisfatto 20, incerto 40, frustrato 45 su 100
-Azioni principali:
-  — Se la coincidenza salta non esiste un piano: si aspetta il treno dopo
-  ? Rimanda i passeggeri alla biglietteria
-  ? Segnala l''evento nel rapporto di servizio
-Touchpoints:
-  — Biglietteria
-  ? Rapporto di servizio
-Attori coinvolti:
-  — Biglietteria (pallino pieno)
-  — Capostazione (pallino pieno)
-Domande:
-  ? “Come finisce per chi ha perso la coincidenza?”
-  ? “Il mio rapporto serve a qualcosa?”
-Criticità:
-  — Il rimborso chiesto in biglietteria non viene accolto
-  — I bus sostitutivi sono previsti solo in caso di soppressione
-  ? Nessun ritorno sul rapporto inviato
-Opportunità:
-  — Dire subito cosa succede se la coincidenza salta: quando passa il prossimo treno e a cosa si ha diritto
-
-Come leggere questa bozza: vedi tabella journey, colonna come_leggere.
-
-USER JOURNEY · CAPOSTAZIONE
-Stazione di cambio sulla linea Bologna–Padova · scenario: cambio di 4 minuti a Monselice (7.26–7.30) · basata sull''intervista al capostazione
-BOZZA: le righe in arancione sono ipotesi, da confermare o correggere.
-Bisogni primari:
-— Rispettare l''orario dei treni viaggiatori
-— Venire incontro al viaggiatore, se i tempi lo permettono
-— Avere il nulla osta del Dirigente Centrale prima di trattenere un treno
-— ? Sapere in anticipo chi ha una coincidenza da prendere
-
-FASE 1. Orario e fasce di punta (Pre-servizio) — prima della mattina · stazione di cambio
-Comportamenti: Legge l''orario → Pesa le fasce di punta
-Canali: Fisico, Vocale
-Emozioni (stima dalle barre, tutta da verificare): soddisfatto 60, incerto 30, frustrato 5 su 100
-Azioni principali:
-  — Ha davanti l''orario: ogni treno ha un arrivo e una partenza
-  — Sa che nelle fasce di punta i treni dei pendolari hanno più importanza
-  ? Controlla gli avvisi di circolazione
-Touchpoints:
-  — Orario dei treni
-  ? Telefono di servizio
-Attori coinvolti:
-  — Capostazione (pallino pieno)
-  — Dirigente Centrale (Bologna) (pallino pieno)
-  — Pendolari (pallino pieno)
-Domande:
-  ? “Il treno viaggiatori rispetta l''orario?”
-  ? “Quali treni oggi contano di più?”
-Criticità:
-  — Le coincidenze e i comporti non sono più normati: il vecchio RCT li prevedeva, oggi non esistono
-  ? Nessuna regola scritta a cui appoggiarsi quando arriva una richiesta
-Opportunità:
-  ? Una regola scritta sulle coincidenze nelle fasce di punta
-
-FASE 2. Treno 1 in arrivo (Servizio) — 7.00 – 7.26 · gestione ordinaria
-Comportamenti: Assegna il binario → Segue l''arrivo
-Canali: Fisico, Vocale
-Emozioni (stima dalle barre, tutta da verificare): soddisfatto 65, incerto 25, frustrato 5 su 100
-Azioni principali:
-  — Gestisce la circolazione dei treni dentro la propria stazione
-  — Può ricevere un treno su un binario senza dare spiegazioni al Dirigente Centrale
-  — Il Dirigente Centrale gestisce i treni in linea dalla sede di Bologna
-Touchpoints:
-  — Binari della stazione
-  — Tabelloni sui binari (solo il prossimo treno)
-  — Altoparlanti
-Attori coinvolti:
-  — Capostazione (pallino pieno)
-  — Dirigente Centrale (Bologna) (pallino pieno)
-  — Pendolari (pallino pieno)
-Domande:
-  ? “Il treno 1 arriva in orario?”
-  ? “Su quale binario lo ricevo?”
-Criticità:
-  — Per i treni viaggiatori il rispetto dell''orario è fondamentale
-  — Possono capitare mille situazioni singolari fuori dall''orario
-  ? Un ritardo del treno 1 non gli arriva in anticipo
-Opportunità:
-  ? Avviso anticipato dal capotreno sui passeggeri con un cambio
-
-FASE 3. La telefonata del capotreno (Servizio) — poco prima delle 7.26 · se il treno 1 è in ritardo
-Comportamenti: Riceve la richiesta → Valuta la fattibilità
-Canali: Vocale
-Emozioni (stima dalle barre, tutta da verificare): soddisfatto 35, incerto 50, frustrato 15 su 100
-Azioni principali:
-  — Il capotreno telefona: un passeggero in arrivo (es. da Ravenna) non deve perdere l''ultimo treno per Padova
-  — Valuta se la cosa è fattibile
-  — Se si parla di pochi minuti, cerca di venire incontro al viaggiatore
-Touchpoints:
-  — Telefono di servizio
-  — Orario del treno in coincidenza
-Attori coinvolti:
-  — Capotreno (pallino pieno)
-  — Capostazione (pallino pieno)
-  — Viaggiatore con coincidenza (pallino pieno)
-Domande:
-  ? “Quanti minuti servono per tenere fermo il treno?”
-  ? “Decido io o devo chiamare Bologna?”
-Criticità:
-  — La richiesta arriva solo a telefono e solo se il capotreno la fa
-  — Se il tempo di attesa è maggiore, non può decidere da solo
-  ? Non sa quanti passeggeri sono coinvolti
-Opportunità:
-  — Rendere automatica la richiesta di attesa, invece che su iniziativa del passeggero
-  ? Vedere quanti passeggeri hanno un cambio prima di decidere
-
-FASE 4. Trattenere il treno? (Servizio) — 7.26 – 7.30 · 4 minuti [fase critica]
-Comportamenti: Chiama il Dirigente → Aspetta il benestare
-Canali: Vocale, Fisico
-Emozioni (stima dalle barre, tutta da verificare): soddisfatto 5, incerto 50, frustrato 65 su 100
-Azioni principali:
-  — Se serve più tempo, spiega il problema al Dirigente Centrale a Bologna e chiede il benestare
-  — Il Dirigente Centrale si interfaccia con il Responsabile dell''impresa ferroviaria (Trenitalia) e comunica il da farsi
-  — Se il Dirigente Centrale ordina di trattenere, ha l''obbligo di ottemperare
-  — Normalmente si cerca di agevolare il viaggiatore
-Touchpoints:
-  — Telefono con il Dirigente Centrale
-  — Nulla osta del Dirigente Centrale
-  — Annunci sonori in stazione
-Attori coinvolti:
-  — Dirigente Centrale (Bologna) (pallino pieno)
-  — Resp. impresa ferroviaria (Trenitalia) (pallino pieno)
-  — Sala Operativa TPER (pallino pieno)
-  — Capostazione (pallino pieno)
-Domande:
-  ? “Quanto posso trattenere senza danneggiare gli altri treni?”
-  ? “Arriverà il benestare?”
-  ? “Chi avvisa il capotreno del treno 2?”
-Criticità:
-  — Più di pochi minuti richiede la catena capostazione → Dirigente Centrale → impresa → capostazione
-  — RFI e Sala Operativa TPER viaggiano su binari paralleli: ci provano da anni con pessimi risultati
-  — Senza norma, tutto dipende dal benestare del momento
-Opportunità:
-  ? Un canale unico condiviso tra capostazione, Dirigente Centrale e impresa
-  ? Un criterio scritto sui minuti di attesa accettabili
-
-FASE 5. Dopo il cambio (Post-servizio) — viaggiatori e coincidenza saltata
-Comportamenti: Parla ai viaggiatori → Indirizza all''attesa
-Canali: Fisico, Vocale
-Emozioni (stima dalle barre, tutta da verificare): soddisfatto 25, incerto 40, frustrato 40 su 100
-Azioni principali:
-  — Se il treno parte, i pendolari la prendono con filosofia
-  — Chi non conosce il regolamento va in biglietteria a chiedere il rimborso, inutilmente
-  — Con chi protesta cerca di andare incontro finché ci sono educazione e rispetto
-  — Se un treno è soppresso, mette in piedi autobus sostitutivi
-Touchpoints:
-  — Biglietteria
-  — Altoparlanti (oggi in italiano chiaro)
-  — Tabelloni sui binari
-Attori coinvolti:
-  — Pendolari (pallino pieno)
-  — Viaggiatori non informati (pallino pieno)
-  — Biglietteria (pallino pieno)
-  — Bus sostitutivi (pallino pieno)
-Domande:
-  ? “Quando passa il prossimo treno?”
-  ? “Posso avere il rimborso?”
-Criticità:
-  — Il rimborso chiesto in biglietteria non viene accolto
-  — Bus: tempi di attesa altissimi; con un treno all''ora conviene aspettare il successivo
-  — Un tempo gli annunci erano in gergo ferroviario e il 95% non li capiva (oggi migliorati)
-Opportunità:
-  — Tabelloni con i prossimi 3 o 4 treni sul binario, come in Germania: tranquillizzerebbe i viaggiatori (proposta del capostazione)
-  ? Dire subito cosa succede se la coincidenza salta e a cosa si ha diritto
-
-Come leggere questa bozza: vedi tabella journey, colonna come_leggere.
-' where codice = 'user_journey';
 
 insert into mattina_segmenti (ordine, nome, orario, durata) values
   (1, 'Sveglia e partenza', '5.50 – 6.30', '40 min'),
