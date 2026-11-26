@@ -175,13 +175,14 @@
     html += `
       <div class="card">
         <ul class="tratta">
-          <li><span class="ora">${ora(t1.partenza)}</span><span>${esc(t1.da)}<br><span class="piccolo">${esc(t1.nome)}</span></span></li>
+          <li><span class="ora">${ora(t1.partenza)}</span><span>${esc(t1.da)}<br><span class="piccolo">${esc(t1.nome)}<br>Ferma a: ${esc(t1.fermate)}</span></span></li>
           <li><span class="ora">${v.ritardo_min ? `<s>${ora(t1.arrivo)}</s>${piuMinuti(t1.arrivo, v.ritardo_min)}` : ora(t1.arrivo)}</span>
               <span>${esc(t1.a)}, binario ${esc(t1.binario_arrivo)}${v.ritardo_min ? `<br><span class="piccolo" style="color:var(--rosso)">+${v.ritardo_min} min previsti all'arrivo</span>` : ''}</span></li>
           <li class="cambio"><span></span><span>Cambio: binario ${esc(t1.binario_arrivo)} → binario ${esc(t2.binario_partenza)}</span></li>
-          <li><span class="ora">${ora(t2.partenza)}</span><span>${esc(t2.da)}, binario ${esc(t2.binario_partenza)}<br><span class="piccolo">${esc(t2.nome)}</span></span></li>
+          <li><span class="ora">${ora(t2.partenza)}</span><span>${esc(t2.da)}, binario ${esc(t2.binario_partenza)}<br><span class="piccolo">${esc(t2.nome)}<br>Ferma a: ${esc(t2.fermate)}</span></span></li>
           <li><span class="ora">${ora(t2.arrivo)}</span><span>${esc(t2.a)}</span></li>
         </ul>
+        <p class="piccolo" style="margin:8px 0 0">${esc(t1.giorni)}. Orari: ${esc(D.fonte)}. I binari vengono dalla nostra ricerca.</p>
       </div>
       <div class="card band">
         <h2>${esc(D.carrozza.titolo)}</h2>
@@ -246,7 +247,7 @@
         (a) => `<div class="alternativa"><div><b>${esc(a.titolo)}</b><br><span class="muto">${esc(a.dettaglio)}</span>${a.nota ? `<br><span class="piccolo">${esc(a.nota)}</span>` : ''}</div>
         <div class="arrivo">${a.arrivo === '—' ? '' : `a ${esc(D.viaggio.treni[1].a)} alle `}${esc(ora(a.arrivo))}</div></div>`
       )
-      .join('')}</div>`;
+      .join('')}${D.nota_alternative ? `<p class="piccolo" style="margin:8px 0 0">${esc(D.nota_alternative)}</p>` : ''}</div>`;
   }
 
   function apriConferma() {

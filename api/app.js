@@ -16,7 +16,11 @@
 // Senza le chiavi VAPID l'app funziona lo stesso, solo senza notifiche.
 
 const VIAGGIO = 'bevilacqua-monselice-ferrara';
-const CAMBIO_MIN = 9; // Monselice: arrivo 7.21, partenza 7.30
+// Monselice: arrivo 7.21; partenza 7.30, dal 13 dicembre 2026 7.29 (orario ufficiale Trenitalia)
+const NUOVO_ORARIO = new Date('2026-12-13T00:00:00+01:00');
+const nuovoOrario = () => new Date() >= NUOVO_ORARIO;
+const cambioMin = () => (nuovoOrario() ? 8 : 9);
+const partenzaCoincidenza = () => (nuovoOrario() ? '7.29' : '7.30');
 const ATTIVI = ['inviata', 'vista', 'stiamo_chiedendo', 'nessuna_risposta'];
 const RISPOSTE = {
   // stato scelto dal capotreno → da quali stati si può passare
@@ -150,7 +154,7 @@ function intero(v, min, max) {
 }
 
 function margine(v) {
-  return CAMBIO_MIN - v.minuti_attraversamento - v.ritardo_min;
+  return cambioMin() - v.minuti_attraversamento - v.ritardo_min;
 }
 
 // Le richieste rimaste senza risposta oltre il limite diventano "nessuna_risposta"
@@ -191,7 +195,7 @@ async function stato(req) {
       ritardo_min: v.ritardo_min,
       minuti_attraversamento: v.minuti_attraversamento,
       minuti_timeout: v.minuti_timeout,
-      cambio_min: CAMBIO_MIN,
+      cambio_min: cambioMin(),
       margine_reale: margine(v),
       aggiornato_il: v.aggiornato_il,
     },
@@ -217,7 +221,7 @@ async function nuovaRichiesta(b) {
   await mandaPush(
     'ruolo=eq.capotreno',
     'Nuova richiesta di coincidenza',
-    `Monselice, treno per Ferrara 7.30: ${attive.length} ${attive.length === 1 ? 'persona' : 'persone'}.`,
+    `Monselice, treno per Ferrara ${partenzaCoincidenza()}: ${attive.length} ${attive.length === 1 ? 'persona' : 'persone'}.`,
     '/app/#capotreno'
   );
   return { ok: true, richiesta: r };

@@ -54,7 +54,8 @@ Serve un telefono che fa il viaggiatore e uno che fa il capotreno, più un compu
 
 ## Cosa cambiare a mano
 
-- **Orari, carrozza consigliata, alternative, turni del capotreno:** file `app/dati.js`. Le righe con `DA VERIFICARE` sono ipotesi.
+- **Orari, carrozza consigliata, alternative, turni del capotreno:** file `app/dati.js`. Gli orari dei treni e le alternative sono veri (orario ufficiale Trenitalia, dati aperti). Le righe con `DA VERIFICARE` (binari, carrozza) e i turni del capotreno sono ancora ipotesi.
+- **Dal 13 dicembre 2026** cambia l'orario: il treno per Bologna parte da Monselice alle 7.29 e il cambio scende a 8 minuti. L'app lo fa da sola.
 - **Minuti per andare dal binario 6 al binario 1** (oggi 4, ipotesi) e **minuti prima dell'avviso "nessuna risposta"** (oggi 3): si cambiano dalla Regia, senza toccare il codice.
 
 ## Se qualcosa non va
