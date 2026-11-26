@@ -24,3 +24,4 @@ Cartella **"DE CIA - COINCIDENZE"**, con i PDF della ricerca sui viaggi in treno
 
 - **Sito:** pagina statica (index.html + style.css) pubblicata gratis su Vercel da main.
 - **Database:** Supabase, piano gratuito, progetto "DE-CIA". Struttura, dati e guida nella cartella `supabase/` (vedi `supabase/GUIDA.md`); file originali nel bucket privato "ricerca".
+- **Modulo contatti:** sezione "Racconta la tua coincidenza" sul sito. La funzione `api/contatto.js` (Vercel) salva ogni messaggio nella tabella `messaggi` di Supabase e manda un avviso via email con Resend (piano gratuito). Chiavi solo nelle Environment Variables di Vercel. Guida: `GUIDA_MODULO_CONTATTI.md`.

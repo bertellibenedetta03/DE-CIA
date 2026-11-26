@@ -19,6 +19,7 @@
         <a href="#catena">Chi decide</a>
         <a href="#scoperte">Tre scoperte</a>
         <a href="#prossimo">Prossimo passo</a>
+        <a href="#racconta">Racconta la tua</a>
       </nav>
     </div>
   </header>
@@ -129,6 +130,48 @@
         <div><p class="label next">Prossimo</p><ul><li>Progettare la raccolta delle richieste di coincidenza</li></ul></div>
       </div>
     </section>
+
+    <section id="racconta" class="band">
+      <div class="wrap">
+        <h2>Racconta la tua coincidenza</h2>
+        <p>Hai perso un treno per pochi minuti? Un capotreno ti ha aspettato, o non l’ha fatto? Lavori in stazione o a bordo? Ogni storia ci aiuta a capire dove si rompe il viaggio. Ti leggiamo noi tre, nessun altro.</p>
+        <form id="modulo" class="form" action="/api/contatto" method="post" novalidate>
+          <div class="row">
+            <label><span>Nome <span class="opt">(facoltativo)</span></span>
+              <input type="text" name="nome" maxlength="120" autocomplete="name">
+            </label>
+            <label><span>Email <span class="opt">(facoltativa, se vuoi una risposta)</span></span>
+              <input type="email" name="email" maxlength="200" autocomplete="email">
+            </label>
+          </div>
+          <div class="row">
+            <label>Di che cosa si tratta
+              <select name="tipo">
+                <option value="testimonianza">Una mia esperienza</option>
+                <option value="domanda">Una domanda sulla ricerca</option>
+                <option value="altro">Altro</option>
+              </select>
+            </label>
+            <label><span>Tratta <span class="opt">(facoltativa)</span></span>
+              <input type="text" name="tratta" maxlength="200" placeholder="es. Rovigo → Bologna, cambio a Ferrara">
+            </label>
+          </div>
+          <label>Il tuo messaggio
+            <textarea name="messaggio" rows="6" maxlength="5000" required placeholder="Che cosa è successo, dove, quanti minuti avevi per il cambio…"></textarea>
+          </label>
+          <div class="hp" aria-hidden="true">
+            <label>Non compilare questo campo <input type="text" name="sito_web" tabindex="-1" autocomplete="off"></label>
+          </div>
+          <input type="hidden" name="aperto_il" value="">
+          <label class="check">
+            <input type="checkbox" name="consenso" required>
+            <span>Accetto che il messaggio venga conservato dal team DE CIA e usato, in forma anonima, solo per questa ricerca universitaria.</span>
+          </label>
+          <button type="submit">Invia</button>
+          <p class="esito" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
   </main>
 
   <footer>
@@ -137,5 +180,43 @@
       <p>DE CIA · Stefano, Benedetta, Beatrice · Lab Sintesi I, 2026</p>
     </div>
   </footer>
+  <script>
+    (function () {
+      var f = document.getElementById('modulo');
+      var esito = f.querySelector('.esito');
+      var btn = f.querySelector('button');
+      f.aperto_il.value = Date.now();
+
+      var q = location.search;
+      if (q.indexOf('inviato=1') > -1) mostra('Grazie! Il tuo messaggio è arrivato.', 'ok');
+      if (q.indexOf('errore=1') > -1) mostra('Qualcosa non ha funzionato. Riprova tra poco.', 'ko');
+
+      function mostra(testo, classe) { esito.textContent = testo; esito.className = 'esito ' + classe; }
+
+      f.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (f.messaggio.value.trim().length < 5) return mostra('Scrivi almeno qualche parola.', 'ko');
+        if (!f.consenso.checked) return mostra('Serve il consenso per salvare il messaggio.', 'ko');
+        btn.disabled = true; mostra('Invio in corso…', '');
+        var dati = {
+          nome: f.nome.value, email: f.email.value, tipo: f.tipo.value, tratta: f.tratta.value,
+          messaggio: f.messaggio.value, consenso: f.consenso.checked,
+          sito_web: f.sito_web.value, aperto_il: f.aperto_il.value
+        };
+        fetch('/api/contatto', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(dati)
+        })
+          .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
+          .then(function (r) {
+            if (r.ok) { f.reset(); f.aperto_il.value = Date.now(); mostra('Grazie! Il tuo messaggio è arrivato.', 'ok'); }
+            else mostra(r.errore || 'Qualcosa non ha funzionato. Riprova tra poco.', 'ko');
+          })
+          .catch(function () { mostra('Connessione assente. Riprova tra poco.', 'ko'); })
+          .then(function () { btn.disabled = false; });
+      });
+    })();
+  </script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 -- DE CIA · Coincidenze — FILE UNICO da incollare nell'editor SQL di Supabase.
 -- Contiene, in ordine: migrations/001_struttura.sql, 002_dati.sql, 003_storage.sql.
+-- (La tabella dei messaggi del sito è a parte: migrations/004_messaggi.sql.)
 -- Si esegue UNA volta sola. Se qualcosa va storto non viene salvato niente (transazione).
 
 begin;
