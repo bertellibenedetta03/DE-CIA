@@ -104,13 +104,22 @@ Il capotreno, dal suo lato, vede le richieste raggruppate: "Monselice, treno per
 2. Tocca il treno di oggi e vede le richieste di coincidenza in arrivo.
 3. Risponde come nel flusso C.
 
+### Flusso F. La notifica di ritardo, senza aprire l'app
+
+1. La prima volta il viaggiatore installa l'app sulla schermata Home e preme "Attiva le notifiche".
+2. Da quel momento, se uno dei treni del suo viaggio salvato ritarda, gli arriva una notifica sul telefono, come un messaggio: "Il 6.44 ha 8 minuti di ritardo previsto a Monselice. Cambio a rischio".
+3. Tocca la notifica e si apre direttamente il suo viaggio, con il semaforo e il bottone "Avvisa il capotreno".
+4. Arriva una notifica anche quando cambia lo stato della richiesta (vista, confermata, rifiutata), così non deve tenere l'app aperta mentre aspetta.
+
+Costo: 0 € (le notifiche delle app installate dal sito sono gratuite). Funziona su Android. Su iPhone funziona solo se l'app è stata aggiunta alla schermata Home e l'iPhone è aggiornato almeno a iOS 16.4. Nel prototipo i ritardi li fa partire la Regia, quindi possiamo mandare la notifica durante i test quando vogliamo.
+
 ## Le schermate
 
 Il prototipo ha 11 schermate. Le altre 4 vengono dopo.
 
 | N. | Schermata | Ruolo | Nel prototipo? |
 | --- | --- | --- | --- |
-| 1 | Benvenuto e scelta del ruolo | Tutti | Sì |
+| 1 | Benvenuto, scelta del ruolo e "Attiva le notifiche" | Tutti | Sì |
 | 2 | Cerca il viaggio (da, a, ora) | Viaggiatore | Sì, solo il viaggio di prova |
 | 3 | Soluzioni con margine reale dei cambi | Viaggiatore | Sì |
 | 4 | Il mio viaggio, in corso: semaforo, ritardo previsto, carrozza consigliata | Viaggiatore | Sì |
@@ -124,7 +133,7 @@ Il prototipo ha 11 schermate. Le altre 4 vengono dopo.
 | 12 | Treni in arrivo e persone che cambiano | Capostazione | Dopo |
 | 13 | Avviso "forse aspetti qualche minuto" | Capotreno del treno in coincidenza | Dopo |
 | 14 | Mappa della stazione di cambio con il percorso tra i binari | Viaggiatore | Dopo |
-| 15 | Viaggi salvati e notifica del mattino | Viaggiatore | Dopo |
+| 15 | Più viaggi salvati e notifica del mattino | Viaggiatore | Dopo |
 
 ## Il problema dei dati: cosa c'è gratis e cosa simuliamo
 
@@ -155,12 +164,13 @@ Facciamo prima la parte che la ricerca indica come rotta: la richiesta che arriv
 4. Margine reale e carrozza consigliata, con i dati che misuriamo noi.
 5. Lo stato della richiesta, aggiornato da solo sullo schermo del viaggiatore.
 6. La Regia, per far partire i ritardi durante i test.
+7. Le notifiche sul telefono quando un treno ritarda o quando il capotreno risponde (flusso F).
 
 **Rimandato a dopo:**
 
 1. Ricerca libera di qualsiasi viaggio in Italia (richiede dati veri e un motore che calcola i percorsi).
 2. Schermate del capostazione e del capotreno del treno in coincidenza.
-3. Notifiche sul telefono anche ad app chiusa.
+3. Notifica automatica del mattino a orario fisso, anche senza ritardi.
 4. Accesso con nome utente e password (nel prototipo si sceglie il ruolo e basta).
 5. App negli store di Google e Apple.
 
